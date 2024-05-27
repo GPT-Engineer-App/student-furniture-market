@@ -1,18 +1,19 @@
 import React, { useState } from "react";
-import { Container, VStack, HStack, Text, Input, Button, Box, Image, IconButton, useToast } from "@chakra-ui/react";
+import { Container, VStack, HStack, Text, Input, Button, Box, Image, IconButton, useToast, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import { FaUpload, FaShoppingCart } from "react-icons/fa";
 
 const Index = () => {
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [file, setFile] = useState(null);
   const toast = useToast();
 
   const handleUpload = () => {
-    if (title && imageUrl) {
-      setItems([...items, { title, imageUrl }]);
+    if (title && file) {
+      const fileUrl = URL.createObjectURL(file);
+      setItems([...items, { title, imageUrl: fileUrl }]);
       setTitle("");
-      setImageUrl("");
+      setFile(null);
       toast({
         title: "Item uploaded.",
         description: "Your item has been uploaded successfully.",
@@ -23,7 +24,7 @@ const Index = () => {
     } else {
       toast({
         title: "Error.",
-        description: "Please provide both title and image URL.",
+        description: "Please provide both title and file.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -39,7 +40,10 @@ const Index = () => {
         </Text>
         <HStack spacing={2} width="100%">
           <Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <Input placeholder="Image URL" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+          <InputGroup>
+            <InputLeftElement pointerEvents="none" children={<FaUpload />} />
+            <Input type="file" onChange={(e) => setFile(e.target.files[0])} />
+          </InputGroup>
           <IconButton aria-label="Upload" icon={<FaUpload />} onClick={handleUpload} />
         </HStack>
         <VStack spacing={4} width="100%">
